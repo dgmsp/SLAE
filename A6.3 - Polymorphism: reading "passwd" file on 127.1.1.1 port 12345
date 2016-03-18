@@ -1,3 +1,8 @@
+; Polymorphism: adding entries to "/etc/hosts" file
+; author: Daniel G. Martin
+; dgmsp.blogspot.com
+; ID - XXXX
+
 section .text
 
 global _start
