@@ -1,3 +1,7 @@
+; Polymorphism: spawning "/bin/sh"
+; author: Daniel G. Martin
+; dgmsp.blogspot.com
+; ID - XXXX
 
 global _start
 section .text
