@@ -1,7 +1,7 @@
-; Shell_Reverse_TCP.nasm
+; Shell Reverse TCP
 ; author: Daniel G. Martin
 ; dgmsp.blogspot.com
-; ID - XXXX
+; ID - 647
 
 global _start
 section .text
