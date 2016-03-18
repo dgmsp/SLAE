@@ -1,5 +1,7 @@
 ; A3.nasm:
-
+; author: Daniel G. Martin
+; dgmsp.blogspot.com
+; ID - XXXX
 
 global _start:
 section .text
