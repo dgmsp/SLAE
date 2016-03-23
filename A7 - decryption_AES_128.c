@@ -1,3 +1,8 @@
+// Decryption AES 128
+// author: Daniel G. Martin
+// dgmsp.blogspot.com
+// ID - 647
+
 #include <stdio.h>
 #include <string.h>
 #include <gcrypt.h>
