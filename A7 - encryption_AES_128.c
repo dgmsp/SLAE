@@ -22,35 +22,30 @@ uint8_t IV[] = "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\xf0\x10
 uint8_t ctr[] = "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\xf0\x10";   
 
 static void encryption(int algo, size_t size, uint8_t *encriptedShellcode){
-
         gcry_cipher_hd_t handle;
         gcry_cipher_open(&handle, algo, mode, 0);
- gcry_cipher_setkey(handle, key, KEY_LENGTH );
- gcry_cipher_setiv(handle, IV, BLOCK_LENGTH);
- gcry_cipher_setctr(handle, ctr, BLOCK_LENGTH);
- gcry_cipher_encrypt(handle, encriptedShellcode, size, shellcode, size);
- gcry_cipher_close(handle);
-
+        gcry_cipher_setkey(handle, key, KEY_LENGTH );
+        gcry_cipher_setiv(handle, IV, BLOCK_LENGTH);
+        gcry_cipher_setctr(handle, ctr, BLOCK_LENGTH);
+        gcry_cipher_encrypt(handle, encriptedShellcode, size, shellcode, size);
+        gcry_cipher_close(handle);
 }
 
-
 int main(void){
+        int i=0;
+        int size = strlen(shellcode);
+        
+        encryption(algo, size, encriptedShellcode);
 
-  int i=0;
- int size = strlen(shellcode);
-
-  encryption(algo, size, encriptedShellcode);
-
-  printf("\n");
-
-  printf("Encrypted shellcode = ");
-  while(i<size){
-  printf("\\x%02x", encriptedShellcode[i]);
-  i++;
+        printf("\n");
+        printf("Encrypted shellcode = ");
+        
+        while(i<size){
+        printf("\\x%02x", encriptedShellcode[i]);
+        i++;
         }
 
-  printf("\n\n");
+        printf("\n\n");
  
- return 0;
-
+        return 0;
 }
