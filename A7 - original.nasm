@@ -1,4 +1,7 @@
-original.nasm
+; prints WWW.SECURITYTUBE.COM
+; author: Daniel G. Martin
+; dgmsp.blogspot.com
+; ID - 647
 
 global _start
 section .text
